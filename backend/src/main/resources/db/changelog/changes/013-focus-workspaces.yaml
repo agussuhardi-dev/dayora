@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-focus-workspaces
+      author: dayora
+      changes:
+        - addColumn: {tableName: focus_session, columns: [{column: {name: workspace_id, type: UUID}}]}
+        - sql: {sql: "UPDATE focus_session f SET workspace_id=COALESCE((SELECT t.workspace_id FROM task t WHERE t.owner_id=f.owner_id AND t.id=f.task_id),(SELECT w.id FROM workspace w WHERE w.owner_id=f.owner_id AND w.name='Personal'))"}
+        - addNotNullConstraint: {tableName: focus_session, columnName: workspace_id, columnDataType: UUID}
+        - addColumn: {tableName: time_entry, columns: [{column: {name: workspace_id, type: UUID}}]}
+        - sql: {sql: "UPDATE time_entry e SET workspace_id=COALESCE((SELECT t.workspace_id FROM task t WHERE t.owner_id=e.owner_id AND t.id=e.task_id),(SELECT w.id FROM workspace w WHERE w.owner_id=e.owner_id AND w.name='Personal'))"}
+        - addNotNullConstraint: {tableName: time_entry, columnName: workspace_id, columnDataType: UUID}
+        - sql: {sql: "ALTER TABLE focus_session ADD CONSTRAINT uq_focus_owner_workspace_id UNIQUE(owner_id,workspace_id,id)"}
+        - sql: {sql: "ALTER TABLE time_entry ADD CONSTRAINT uq_time_owner_workspace_id UNIQUE(owner_id,workspace_id,id)"}
+        - sql: {sql: "ALTER TABLE focus_session ADD CONSTRAINT fk_focus_workspace_owner FOREIGN KEY (owner_id,workspace_id) REFERENCES workspace(owner_id,id)"}
+        - sql: {sql: "ALTER TABLE time_entry ADD CONSTRAINT fk_time_workspace_owner FOREIGN KEY (owner_id,workspace_id) REFERENCES workspace(owner_id,id)"}
+        - sql: {sql: "ALTER TABLE focus_session ADD CONSTRAINT fk_focus_task_same_workspace FOREIGN KEY (owner_id,workspace_id,task_id) REFERENCES task(owner_id,workspace_id,id)"}
+        - sql: {sql: "ALTER TABLE time_entry ADD CONSTRAINT fk_time_task_same_workspace FOREIGN KEY (owner_id,workspace_id,task_id) REFERENCES task(owner_id,workspace_id,id)"}
+        - createIndex: {tableName: focus_session, indexName: ix_focus_owner_workspace_started, columns: [{column: {name: owner_id}}, {column: {name: workspace_id}}, {column: {name: started_at}}]}
+        - createIndex: {tableName: time_entry, indexName: ix_time_owner_workspace_started, columns: [{column: {name: owner_id}}, {column: {name: workspace_id}}, {column: {name: started_at}}]}

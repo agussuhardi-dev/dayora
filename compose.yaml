@@ -1,0 +1,33 @@
+services:
+  backend:
+    image: dayora-backend:${DEPLOY_TAG:-latest}
+    build: ./backend
+    env_file: .env
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/dayora-firebase.json
+    volumes:
+      - ${FIREBASE_CREDENTIALS_FILE:-./secrets/dayora-firebase.json}:/run/secrets/dayora-firebase.json:ro
+    ports:
+      - "${BACKEND_PORT:-81}:${SERVER_PORT:-81}"
+    restart: unless-stopped
+    mem_limit: 768m
+    mem_reservation: 256m
+
+  frontend:
+    image: dayora-frontend:${DEPLOY_TAG:-latest}
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-4200}:80"
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --protocol http2 run --token ${CLAUDEFIRE_TUNNEL:?Set CLAUDEFIRE_TUNNEL in .env}
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    depends_on:
+      - frontend
+    restart: unless-stopped

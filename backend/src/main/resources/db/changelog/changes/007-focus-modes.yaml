@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-focus-modes
+      author: dayora
+      changes:
+        - addColumn:
+            tableName: focus_session
+            columns:
+              - column: {name: mode, type: VARCHAR(20), defaultValue: NORMAL, constraints: {nullable: false}}
+              - column: {name: phase, type: VARCHAR(20), defaultValue: FOCUS, constraints: {nullable: false}}
+              - column: {name: completed_focus_count, type: INT, defaultValueNumeric: 0, constraints: {nullable: false}}

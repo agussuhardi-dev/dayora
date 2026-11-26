@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014-remove-offline-sync
+      author: dayora
+      changes:
+        - createTable:
+            tableName: account_event_counter
+            columns:
+              - column: {name: owner_id, type: UUID, constraints: {primaryKey: true, nullable: false, foreignKeyName: fk_account_event_counter_owner, references: app_user(id)}}
+              - column: {name: next_sequence, type: BIGINT, defaultValueNumeric: 1, constraints: {nullable: false}}
+        - sql: {sql: "INSERT INTO account_event_counter (owner_id, next_sequence) SELECT owner_id, next_sequence FROM sync_cursor_counter"}
+        - dropTable: {tableName: sync_operation_receipt}
+        - dropTable: {tableName: change_log}
+        - dropTable: {tableName: sync_cursor_counter}
+        - dropTable: {tableName: device}

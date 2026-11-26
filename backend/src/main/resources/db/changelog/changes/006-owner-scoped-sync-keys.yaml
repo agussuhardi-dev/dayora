@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-owner-scoped-sync-keys
+      author: dayora
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              DO $$
+              DECLARE t text; k text;
+              BEGIN
+                FOREACH t IN ARRAY ARRAY['sync_operation_receipt','change_log'] LOOP
+                  SELECT conname INTO k FROM pg_constraint WHERE conrelid=t::regclass AND contype='p';
+                  EXECUTE format('ALTER TABLE %I DROP CONSTRAINT %I',t,k);
+                  IF t='sync_operation_receipt' THEN
+                    ALTER TABLE sync_operation_receipt ADD CONSTRAINT pk_sync_operation_receipt PRIMARY KEY(owner_id,operation_id);
+                  ELSE
+                    ALTER TABLE change_log ADD CONSTRAINT pk_change_log PRIMARY KEY(owner_id,sequence);
+                  END IF;
+                END LOOP;
+              END $$;

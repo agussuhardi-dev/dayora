@@ -1,0 +1,147 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  // Follow the selected root theme, including system preference.
+  color-scheme: inherit;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
+:root {
+  color-scheme: light;
+  --dayora-accent: #7561d8;
+  --dayora-solid: #f8f8fc;
+  --dayora-bg: #eef0f7;
+  --dayora-text: #24232d;
+  --dayora-muted: #777582;
+  --dayora-primary: var(--dayora-accent);
+  --dayora-primary-dark: color-mix(in srgb, var(--dayora-accent) 78%, black);
+  --dayora-link: #634bc1;
+  --dayora-glow: #dfd4ff;
+  --dayora-glass: rgba(255, 255, 255, .62);
+  --dayora-glass-strong: rgba(255, 255, 255, .78);
+  --dayora-glass-border: rgba(255, 255, 255, .82);
+  --dayora-glass-shadow: 0 24px 70px rgba(64, 57, 95, .16), inset 0 1px rgba(255,255,255,.95);
+  --dayora-radius: 22px;
+}
+
+:root { --dayora-surface: rgba(255,255,255,.62); --dayora-surface-strong: rgba(255,255,255,.78); --dayora-border: rgba(255,255,255,.82); --dayora-hover: rgba(255,255,255,.72); }
+@mixin dark-theme {
+  color-scheme: dark;
+  @include mat.theme((color: (theme-type: dark, primary: mat.$azure-palette, tertiary: mat.$blue-palette)));
+  --dayora-solid: #1b2037;
+  --dayora-bg: #101426;
+  --dayora-text: #f2efff;
+  --dayora-muted: #c0bdd4;
+  --dayora-primary: color-mix(in srgb, var(--dayora-accent) 45%, #c4b5fd);
+  --dayora-primary-dark: #c4b5fd;
+  --dayora-link: #d6c8ff;
+  --dayora-glow: #34264f;
+  --dayora-surface: rgba(24, 29, 49, .85);
+  --dayora-surface-strong: rgba(29, 35, 57, .94);
+  --dayora-border: rgba(203, 191, 255, .22);
+  --dayora-hover: rgba(193, 174, 255, .16);
+  --dayora-glass: var(--dayora-surface);
+  --dayora-glass-strong: var(--dayora-surface-strong);
+  --dayora-glass-border: var(--dayora-border);
+  --dayora-glass-shadow: 0 24px 70px rgba(3, 5, 19, .5), inset 0 1px rgba(255,255,255,.08);
+  --mat-sys-surface: #101426;
+  --mat-sys-surface-container: #1b2037;
+  --mat-sys-surface-container-high: #252a44;
+  --mat-sys-on-surface: #f2efff;
+  --mat-sys-on-surface-variant: #c0bdd4;
+  --mat-sys-primary: #c4b5fd;
+  --mat-sys-on-primary: #151027;
+  --mat-sys-outline: #a9a1c3;
+}
+html[data-theme='dark'] { @include dark-theme; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] { @include dark-theme; }
+}
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.theme-control select { color:var(--dayora-text); background:var(--dayora-glass-strong); border:1px solid var(--dayora-glass-border); border-radius:8px; padding:5px; }
+.theme-control input[type='color'] { width:30px; height:30px; padding:2px; border:1px solid var(--dayora-glass-border); border-radius:8px; background:transparent; cursor:pointer; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  min-width: 320px;
+  background: radial-gradient(circle at 75% 0%, #ddd4ff 0, transparent 28%), radial-gradient(circle at 10% 90%, #c9edf1 0, transparent 30%), var(--dayora-bg);
+  color: var(--dayora-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--dayora-primary) 70%, white); outline-offset: 3px; }
+
+.glass-surface {
+  border: 1px solid var(--dayora-glass-border);
+  background: linear-gradient(145deg, var(--dayora-glass-strong), var(--dayora-glass));
+  box-shadow: var(--dayora-glass-shadow);
+  backdrop-filter: blur(28px) saturate(145%);
+  -webkit-backdrop-filter: blur(28px) saturate(145%);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-surface { background: #f8f8fc; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass-surface { background: var(--dayora-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* Component-local legacy colors: dark-only, deliberately targeted. */
+@mixin dark-component-fixes {
+  body { background: radial-gradient(circle at 75% 0%, #292149 0, transparent 28%), radial-gradient(circle at 10% 90%, #173a45 0, transparent 30%), var(--dayora-bg); }
+  .auth-page .glass-surface { background: var(--dayora-surface-strong); color: var(--dayora-text); border-color: var(--dayora-border); }
+  .auth-page .mobile-brand, .auth-page .subtitle, .auth-page .password-help, .auth-page .switch { color: var(--dayora-muted); }
+  .auth-page .kicker, .auth-page .reveal, .auth-page .switch a { color: var(--dayora-link) !important; }
+  .auth-page .submit { background: #7561d8 !important; color: #fff !important; }
+  .today-page .hero { background: linear-gradient(125deg, #302a52, #183b42); }
+  .today-page .hero h2 { color: #f2efff; }
+  app-focus .connection { color: #9ee8c2; }
+  app-focus .connection.offline { color: #ffb4ab; }
+  app-focus .settings-modal, app-focus .settings-trigger, app-focus .settings-close, app-focus .duration-card, app-focus .stepper button, app-focus .mode-picker button, app-focus .task-picker input { background: var(--dayora-surface-strong); color: var(--dayora-text); border-color: var(--dayora-border); }
+  app-focus .timer-core { background: linear-gradient(145deg, #252a44, #171b30); border-color: var(--dayora-border); box-shadow: inset 0 2px 15px rgba(255,255,255,.08); }
+  app-focus .secondary, app-focus .refresh { background: var(--dayora-surface-strong); color: var(--dayora-text); }
+  app-focus-history .session-icon.complete, app-focus .session-icon.complete { color: #9ee8c2; background: rgba(98,200,148,.16); }
+  app-focus-history .session-state.complete { color: #9ee8c2; background: rgba(98,200,148,.16); }
+  .cdk-overlay-container { color: var(--dayora-text); }
+  .mat-mdc-autocomplete-panel, .mat-mdc-select-panel, .mat-mdc-menu-panel { background: var(--dayora-surface-strong); color: var(--dayora-text); }
+}
+html[data-theme='dark'] { @include dark-component-fixes; }
+@media (prefers-color-scheme: dark) { html[data-theme='system'] { @include dark-component-fixes; } }
+.dayora-theme-menu.mat-mdc-select-panel { padding: 7px; border: 1px solid var(--dayora-glass-border); border-radius: 16px; background: var(--dayora-glass-strong); box-shadow: var(--dayora-glass-shadow); backdrop-filter: blur(28px); }
+.dayora-theme-menu .mat-mdc-option { min-height: 40px; border-radius: 10px; color: var(--dayora-text); }
+.dayora-theme-menu .mat-mdc-option:hover, .dayora-theme-menu .mat-mdc-option.mdc-list-item--selected { background: var(--dayora-hover); }
+.dayora-theme-menu .mat-mdc-option mat-icon { color: var(--dayora-primary); margin-right: 9px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+

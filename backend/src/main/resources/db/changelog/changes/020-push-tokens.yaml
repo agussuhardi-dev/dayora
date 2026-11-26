@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 020-push-tokens
+      author: dayora
+      changes:
+        - createTable:
+            tableName: push_device_token
+            columns:
+              - column: {name: token_key, type: varchar(64), constraints: {primaryKey: true, nullable: false}}
+              - column: {name: token, type: varchar(4096), constraints: {nullable: false}}
+              - column: {name: owner_id, type: uuid, constraints: {nullable: false}}
+              - column: {name: created_at, type: timestamp with time zone, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+        - addForeignKeyConstraint:
+            baseTableName: push_device_token
+            baseColumnNames: owner_id
+            referencedTableName: app_user
+            referencedColumnNames: id
+            constraintName: fk_push_token_owner
+            onDelete: CASCADE
+        - createIndex:
+            tableName: push_device_token
+            indexName: ix_push_token_owner
+            columns: [{column: {name: owner_id}}]

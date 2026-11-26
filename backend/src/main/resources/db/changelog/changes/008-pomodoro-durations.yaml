@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-pomodoro-durations
+      author: dayora
+      changes:
+        - addColumn:
+            tableName: focus_session
+            columns:
+              - column: {name: focus_duration_minutes, type: INT, defaultValueNumeric: 25, constraints: {nullable: false}}
+              - column: {name: short_break_duration_minutes, type: INT, defaultValueNumeric: 5, constraints: {nullable: false}}
+              - column: {name: long_break_duration_minutes, type: INT, defaultValueNumeric: 15, constraints: {nullable: false}}

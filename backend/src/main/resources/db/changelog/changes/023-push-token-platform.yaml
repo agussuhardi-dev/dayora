@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-push-token-platform
+      author: dayora
+      changes:
+        - addColumn:
+            tableName: push_device_token
+            columns:
+              - column:
+                  name: platform
+                  type: varchar(16)
+                  defaultValue: ANDROID
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: "ALTER TABLE push_device_token ADD CONSTRAINT ck_push_token_platform CHECK (platform IN ('ANDROID', 'WEB'))"

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs><linearGradient id="brand" x2="1" y2="1"><stop stop-color="#9a84f9"/><stop offset="1" stop-color="#6952ca"/></linearGradient></defs>
+  <rect width="64" height="64" rx="18" fill="url(#brand)"/>
+  <g stroke="#fff" stroke-width="7" stroke-linecap="round">
+    <path d="M32 16v32M16 32h32M21 21l22 22M21 43l22-22"/>
+  </g>
+</svg>

@@ -1,0 +1,1 @@
+<resources><string name="app_name">dayora.</string><string name="accessibility_description">Blocks only selected apps while a Dayora focus session is running. Reads package transitions only; never screen contents.</string></resources>

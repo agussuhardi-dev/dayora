@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: dayora-backend
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/dayora}
+    username: ${DATABASE_USERNAME:dayora}
+    password: ${DATABASE_PASSWORD:dayora-dev}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  jackson:
+    time-zone: UTC
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: lax
+      timeout: 30m
+
+dayora:
+  fcm:
+    project-id: ${FIREBASE_PROJECT_ID:}
+    web:
+      api-key: ${FIREBASE_WEB_API_KEY:}
+      auth-domain: ${FIREBASE_WEB_AUTH_DOMAIN:}
+      messaging-sender-id: ${FIREBASE_WEB_MESSAGING_SENDER_ID:}
+      app-id: ${FIREBASE_WEB_APP_ID:}
+      vapid-key: ${FIREBASE_WEB_VAPID_KEY:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

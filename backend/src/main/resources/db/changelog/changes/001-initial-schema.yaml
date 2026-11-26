@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-app-user
+      author: dayora
+      changes:
+        - createTable:
+            tableName: app_user
+            columns:
+              - column: {name: id, type: UUID, constraints: {primaryKey: true, nullable: false}}
+              - column: {name: username, type: VARCHAR(120), constraints: {nullable: false}}
+              - column: {name: normalized_username, type: VARCHAR(120), constraints: {nullable: false}}
+              - column: {name: password_hash, type: VARCHAR(255), constraints: {nullable: false}}
+              - column: {name: role, type: VARCHAR(20), defaultValue: USER, constraints: {nullable: false}}
+              - column: {name: status, type: VARCHAR(20), defaultValue: ACTIVE, constraints: {nullable: false}}
+              - column: {name: timezone, type: VARCHAR(64), defaultValue: UTC, constraints: {nullable: false}}
+              - column: {name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+              - column: {name: updated_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+        - addUniqueConstraint: {tableName: app_user, columnNames: normalized_username, constraintName: uq_app_user_normalized_username}
+
+  - changeSet:
+      id: 002-create-task
+      author: dayora
+      changes:
+        - createTable:
+            tableName: task
+            columns:
+              - column: {name: id, type: UUID, constraints: {primaryKey: true, nullable: false}}
+              - column: {name: owner_id, type: UUID, constraints: {nullable: false, foreignKeyName: fk_task_owner, references: app_user(id)}}
+              - column: {name: title, type: VARCHAR(240), constraints: {nullable: false}}
+              - column: {name: notes, type: TEXT}
+              - column: {name: priority, type: VARCHAR(20), defaultValue: NONE, constraints: {nullable: false}}
+              - column: {name: due_date, type: DATE}
+              - column: {name: completed_at, type: TIMESTAMP WITH TIME ZONE}
+              - column: {name: revision, type: BIGINT, defaultValueNumeric: 1, constraints: {nullable: false}}
+              - column: {name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+              - column: {name: updated_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+              - column: {name: deleted_at, type: TIMESTAMP WITH TIME ZONE}
+        - createIndex: {tableName: task, indexName: idx_task_owner_updated, columns: [{column: {name: owner_id}}, {column: {name: updated_at}}]}
+        - createIndex: {tableName: task, indexName: idx_task_owner_due_date, columns: [{column: {name: owner_id}}, {column: {name: due_date}}]}
+
+  - changeSet:
+      id: 003-create-device
+      author: dayora
+      changes:
+        - createTable:
+            tableName: device
+            columns:
+              - column: {name: id, type: UUID, constraints: {primaryKey: true, nullable: false}}
+              - column: {name: owner_id, type: UUID, constraints: {nullable: false, foreignKeyName: fk_device_owner, references: app_user(id)}}
+              - column: {name: name, type: VARCHAR(120), constraints: {nullable: false}}
+              - column: {name: last_seen_at, type: TIMESTAMP WITH TIME ZONE}
+              - column: {name: revoked_at, type: TIMESTAMP WITH TIME ZONE}
+              - column: {name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+        - createIndex: {tableName: device, indexName: idx_device_owner, columns: [{column: {name: owner_id}}]}

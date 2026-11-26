@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-device-sync-hardening
+      author: dayora
+      changes:
+        - createIndex:
+            tableName: device
+            indexName: idx_device_owner_active
+            columns:
+              - column: {name: owner_id}
+              - column: {name: revoked_at}

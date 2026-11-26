@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-workspace-name-constraint
+      author: dayora
+      changes:
+        # YAML flow values containing commas must be quoted; 011 created owner-only uniqueness.
+        - dropUniqueConstraint: {tableName: workspace, constraintName: uq_workspace_owner_name}
+        - addUniqueConstraint: {tableName: workspace, columnNames: "owner_id,name", constraintName: uq_workspace_owner_name}

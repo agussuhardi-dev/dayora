@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-calendar-event
+      author: dayora
+      changes:
+        - createTable:
+            tableName: calendar_event
+            columns:
+              - column: {name: id, type: UUID, constraints: {primaryKey: true, nullable: false}}
+              - column: {name: owner_id, type: UUID, constraints: {nullable: false, foreignKeyName: fk_calendar_owner, references: app_user(id)}}
+              - column: {name: task_id, type: UUID}
+              - column: {name: title, type: VARCHAR(240), constraints: {nullable: false}}
+              - column: {name: starts_at, type: TIMESTAMP WITH TIME ZONE, constraints: {nullable: false}}
+              - column: {name: ends_at, type: TIMESTAMP WITH TIME ZONE, constraints: {nullable: false}}
+              - column: {name: timezone, type: VARCHAR(64), constraints: {nullable: false}}
+              - column: {name: category, type: VARCHAR(64)}
+              - column: {name: color, type: VARCHAR(32)}
+              - column: {name: revision, type: BIGINT, defaultValueNumeric: 1, constraints: {nullable: false}}
+              - column: {name: created_at, type: TIMESTAMP WITH TIME ZONE, constraints: {nullable: false}}
+              - column: {name: updated_at, type: TIMESTAMP WITH TIME ZONE, constraints: {nullable: false}}
+              - column: {name: deleted_at, type: TIMESTAMP WITH TIME ZONE}
+        - addForeignKeyConstraint: {baseTableName: calendar_event, baseColumnNames: task_id, referencedTableName: task, referencedColumnNames: id, constraintName: fk_calendar_task}
+        - sql: {sql: "CREATE INDEX ix_calendar_owner_time ON calendar_event(owner_id, starts_at) WHERE deleted_at IS NULL"}

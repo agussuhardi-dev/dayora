@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-realtime-identity
+      author: dayora
+      changes:
+        - createTable:
+            tableName: external_identity
+            columns:
+              - column: {name: issuer, type: VARCHAR(500), constraints: {nullable: false}}
+              - column: {name: subject, type: VARCHAR(500), constraints: {nullable: false}}
+              - column: {name: account_id, type: UUID, constraints: {nullable: false, foreignKeyName: fk_external_identity_account, references: app_user(id)}}
+              - column: {name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: {nullable: false}}
+        - addPrimaryKey: {tableName: external_identity, columnNames: issuer, subject, constraintName: pk_external_identity}
+        - addUniqueConstraint: {tableName: external_identity, columnNames: account_id, constraintName: uq_external_identity_account}

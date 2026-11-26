@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-workspaces
+      author: dayora
+      changes:
+        - createTable:
+            tableName: workspace
+            columns:
+              - column: {name: id, type: UUID, constraints: {primaryKey: true, nullable: false}}
+              - column: {name: owner_id, type: UUID, constraints: {nullable: false, foreignKeyName: fk_workspace_owner, references: app_user(id)}}
+              - column: {name: name, type: VARCHAR(120), constraints: {nullable: false}}
+              - column: {name: created_at, type: TIMESTAMP WITH TIME ZONE, constraints: {nullable: false}}
+        - addUniqueConstraint: {tableName: workspace, columnNames: owner_id,name, constraintName: uq_workspace_owner_name}
+        - sql: {sql: "INSERT INTO workspace(id,owner_id,name,created_at) SELECT gen_random_uuid(),id,'Personal',created_at FROM app_user"}
+        - addColumn: {tableName: task, columns: [{column: {name: workspace_id, type: UUID}}]}
+        - sql: {sql: "UPDATE task t SET workspace_id=(SELECT w.id FROM workspace w WHERE w.owner_id=t.owner_id AND w.name='Personal')"}
+        - addNotNullConstraint: {tableName: task, columnName: workspace_id, columnDataType: UUID}
+        - addColumn: {tableName: calendar_event, columns: [{column: {name: workspace_id, type: UUID}}]}
+        - sql: {sql: "UPDATE calendar_event e SET workspace_id=(SELECT w.id FROM workspace w WHERE w.owner_id=e.owner_id AND w.name='Personal')"}
+        - addNotNullConstraint: {tableName: calendar_event, columnName: workspace_id, columnDataType: UUID}
+        - addColumn: {tableName: task, columns: [{column: {name: status, type: VARCHAR(20), defaultValue: TODO}}]}
+        - addNotNullConstraint: {tableName: task, columnName: status, columnDataType: VARCHAR(20)}
+        - sql: {sql: "UPDATE task SET status='DONE' WHERE completed_at IS NOT NULL"}
+        - sql: {sql: "ALTER TABLE workspace ADD CONSTRAINT uq_workspace_owner_id UNIQUE(owner_id,id)"}
+        - sql: {sql: "ALTER TABLE task ADD CONSTRAINT uq_task_owner_workspace_id UNIQUE(owner_id,workspace_id,id)"}
+        - sql: {sql: "ALTER TABLE task ADD CONSTRAINT fk_task_workspace_owner FOREIGN KEY (owner_id,workspace_id) REFERENCES workspace(owner_id,id)"}
+        - sql: {sql: "ALTER TABLE calendar_event ADD CONSTRAINT fk_calendar_workspace_owner FOREIGN KEY (owner_id,workspace_id) REFERENCES workspace(owner_id,id)"}
+        - sql: {sql: "ALTER TABLE calendar_event ADD CONSTRAINT fk_calendar_task_same_workspace FOREIGN KEY (owner_id,workspace_id,task_id) REFERENCES task(owner_id,workspace_id,id)"}
+        - sql: {sql: "ALTER TABLE task ADD CONSTRAINT ck_task_status CHECK (status IN ('TODO','IN_PROGRESS','DONE','CANCELED') AND ((status='DONE') = (completed_at IS NOT NULL)))"}
+        - sql:
+            sql: "UPDATE change_log c SET payload_json=(c.payload_json::jsonb || jsonb_build_object('workspaceId',w.id) || CASE WHEN c.entity_type='TASK' THEN jsonb_build_object('status',CASE WHEN c.payload_json::jsonb->>'completedAt' IS NOT NULL THEN 'DONE' ELSE 'TODO' END) ELSE '{}'::jsonb END)::text FROM workspace w WHERE w.owner_id=c.owner_id AND w.name='Personal' AND c.entity_type IN ('TASK','CALENDAR_EVENT')"
